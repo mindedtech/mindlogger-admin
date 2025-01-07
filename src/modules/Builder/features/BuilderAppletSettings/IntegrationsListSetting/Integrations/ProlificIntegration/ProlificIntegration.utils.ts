@@ -21,7 +21,7 @@ const ProlificIntegrationStatus = object({
   exists: boolean().required(),
 });
 
-export const getProlificApiToken = async (appletId: string): Promise<boolean> => {
+export const prolificIntegrationExists = async (appletId: string): Promise<boolean> => {
   const response = await authApiClient.get('/integrations/prolific', {
     params: { applet_id: appletId },
   });
@@ -33,4 +33,14 @@ export const getProlificApiToken = async (appletId: string): Promise<boolean> =>
   }
 
   return false;
+};
+
+export const deleteProlificIntegration = async (appletId: string) => {
+  const response = await authApiClient.delete(`/integrations/applet/${appletId}`, {
+    params: { integration_type: IntegrationTypes.Prolific },
+  });
+
+  if (response.status !== 204) {
+    throw new Error('Failed to delete Prolific API Token');
+  }
 };

@@ -5,7 +5,7 @@ import { screen } from '@testing-library/react';
 import { renderWithProviders } from 'shared/utils/renderWithProviders';
 
 import { ProlificIntegration } from './ProlificIntegration';
-import { getProlificApiToken } from './ProlificIntegration.utils';
+import { prolificIntegrationExists } from './ProlificIntegration.utils';
 
 jest.mock('./ProlificIntegration.utils', () => ({
   getProlificApiToken: jest.fn(),
@@ -17,7 +17,7 @@ describe('ProlificIntegration', () => {
   });
 
   test('should render the ProlificIntegration component', () => {
-    getProlificApiToken.mockResolvedValue(null);
+    prolificIntegrationExists.mockResolvedValue(null);
 
     renderWithProviders(<ProlificIntegration />);
 
@@ -33,7 +33,7 @@ describe('ProlificIntegration', () => {
   });
 
   test('should render the ProlificIntegration connected component when api token exists', async () => {
-    getProlificApiToken.mockResolvedValue('api-token');
+    prolificIntegrationExists.mockResolvedValue(true);
 
     renderWithProviders(<ProlificIntegration />);
 

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Modal, Svg } from 'shared/components';
 import { InputController } from 'shared/components/FormComponents';
+import { IntegrationTypes } from 'shared/consts';
 import { StyledBodyMedium, StyledModalWrapper, theme, variables } from 'shared/styles';
 
 import { StyledLink } from '../ProlificIntegration.styles';
@@ -18,8 +19,8 @@ type ProlificApiToken = {
 export const ConfigurationPopup = ({
   open,
   onClose,
-  onApiTokenSubmitted,
-  appletId,
+  applet,
+  updateAppletData,
 }: ConfigurationPopupProps) => {
   const { t } = useTranslation();
   const [error, setError] = useState<string | undefined>();
@@ -39,11 +40,28 @@ export const ConfigurationPopup = ({
 
     const apiToken = methods.getValues().apiToken;
 
+    if (!applet?.id) {
+      return;
+    }
+
     try {
-      await createProlificIntegration(apiToken, appletId);
+      await createProlificIntegration(apiToken, applet.id);
+      const newApplet = {
+        ...applet,
+        integrations: [
+          ...(applet.integrations ?? []),
+          {
+            integrationType: IntegrationTypes.Prolific,
+            configuration: {},
+          },
+        ],
+      };
+
+      updateAppletData(newApplet);
+
       setError(undefined);
       setApiTokenExists(true);
-      onApiTokenSubmitted(true);
+      onClose();
     } catch (e) {
       if (e instanceof Error) {
         setError(e.message);

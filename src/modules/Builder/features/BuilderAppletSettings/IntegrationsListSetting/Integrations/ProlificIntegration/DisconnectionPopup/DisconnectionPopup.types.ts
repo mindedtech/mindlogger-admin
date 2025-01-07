@@ -1,6 +1,6 @@
 import { SingleApplet } from 'redux/modules';
 
-export type ConfigurationPopup = {
+export type DisconnectionPopup = {
   open: boolean;
   applet: SingleApplet;
   onClose: () => void;
