@@ -5,26 +5,23 @@ import { useTranslation } from 'react-i18next';
 
 import { Modal, Svg } from 'shared/components';
 import { InputController } from 'shared/components/FormComponents';
+import { IntegrationTypes } from 'shared/consts';
 import { StyledBodyMedium, StyledModalWrapper, theme, variables } from 'shared/styles';
 
 import { StyledLink } from '../ProlificIntegration.styles';
 import { createProlificIntegration } from '../ProlificIntegration.utils';
-import type { ConfigurationPopup as ConfigurationPopupProps } from './ConfigurationPopup.types';
-
-type ProlificApiToken = {
-  apiToken: string;
-};
+import type { PopupProps as ConfigurationPopupProps } from '../ProlificIntegration.types';
+import { ConfigurationPopupState, ProlificApiToken } from './ConfigurationPopup.types';
 
 export const ConfigurationPopup = ({
   open,
   onClose,
-  onApiTokenSubmitted,
-  appletId,
+  applet,
+  updateAppletData,
 }: ConfigurationPopupProps) => {
   const { t } = useTranslation();
-  const [error, setError] = useState<string | undefined>();
-  const [submitting, setSubmitting] = useState(false);
-  const [apiTokenExists, setApiTokenExists] = useState(false);
+  const [state, setState] = useState<ConfigurationPopupState>({ kind: 'idle' });
+  const [inputType, setInputType] = useState('password');
 
   const inputNameApiToken = 'apiToken';
 
@@ -35,28 +32,42 @@ export const ConfigurationPopup = ({
   });
 
   const submitProlificApiToken = async () => {
-    setSubmitting(true);
+    setState({ kind: 'submitting' });
 
     const apiToken = methods.getValues().apiToken;
 
+    if (!applet?.id) {
+      return;
+    }
+
     try {
-      await createProlificIntegration(apiToken, appletId);
-      setError(undefined);
-      setApiTokenExists(true);
-      onApiTokenSubmitted(true);
+      await createProlificIntegration(apiToken, applet.id);
+      const nextApplet = {
+        ...applet,
+        integrations: [
+          ...(applet.integrations ?? []),
+          {
+            integrationType: IntegrationTypes.Prolific,
+            configuration: {},
+          },
+        ],
+      };
+
+      updateAppletData(nextApplet);
+      onClose();
     } catch (e) {
       if (e instanceof Error) {
-        setError(e.message);
+        setState({ kind: 'error', message: e.message });
       }
-    } finally {
-      setSubmitting(false);
     }
   };
+
+  const { kind } = state;
 
   return (
     <FormProvider {...methods}>
       <Modal
-        open={open && !apiTokenExists}
+        open={open}
         onClose={onClose}
         title={
           <>
@@ -66,7 +77,7 @@ export const ConfigurationPopup = ({
             {t('prolific.configurationPopupTitle')}
           </>
         }
-        disabledSubmit={methods.watch(inputNameApiToken) === '' && !submitting && !apiTokenExists}
+        disabledSubmit={methods.watch(inputNameApiToken) === '' || kind === 'submitting'}
         onSubmit={methods.handleSubmit(submitProlificApiToken)}
         buttonText={t('submit')}
         hasLeftBtn
@@ -77,24 +88,28 @@ export const ConfigurationPopup = ({
       >
         <StyledModalWrapper>
           <StyledBodyMedium sx={{ color: variables.palette.on_surface, mb: theme.spacing(1.2) }}>
-            {submitting
+            {state.kind === 'submitting'
               ? t('prolific.configurationPopupConnecting')
               : t('prolific.configurationPopupDescription')}
           </StyledBodyMedium>
           <InputController
             name={inputNameApiToken}
             required
-            disabled={apiTokenExists}
+            disabled={state.kind === 'submitting'}
             fullWidth
             label={t('prolific.apiToken')}
+            type={inputType}
+            onBlur={() => setInputType('password')}
+            onFocus={() => setInputType('text')}
+            autoComplete="off"
             onChange={(e) => methods.setValue(inputNameApiToken, e.target.value)}
           />
-          {error && (
+          {kind === 'error' && (
             <StyledBodyMedium
               sx={{ color: variables.palette.semantic.error, mt: theme.spacing(1.8) }}
               data-testid="upload-data-popup-error"
             >
-              {error}
+              {state.message}
             </StyledBodyMedium>
           )}
 

@@ -942,7 +942,11 @@
     "prolificConnectionStatus": "Connected",
     "viewDashboard": "View Prolific Dashboard",
     "disconnect": "Disconnect from Prolific",
-    "addStudy": "Add Study"
+    "delete": "Delete Prolific API Token",
+    "addStudy": "Add Study",
+    "deleteToken": "Delete Token",
+    "deleting": "Deleting...",
+    "deletionWarning": "Are you sure you want to disconnect Prolific from this applet?"
   },
   "lockDescription": "You have been inactive for 15 minutes.<br/> Log In to proceed.",
   "login": "Log In",

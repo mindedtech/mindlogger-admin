@@ -1,6 +1,15 @@
-export type ConfigurationPopup = {
-  appletId?: string;
-  open: boolean;
-  onClose: () => void;
-  onApiTokenSubmitted: (apiTokenExists: boolean) => void;
+export type ProlificApiToken = {
+  apiToken: string;
 };
+
+export type ConfigurationPopupState =
+  | {
+      kind: 'idle';
+    }
+  | {
+      kind: 'submitting';
+    }
+  | {
+      kind: 'error';
+      message: string;
+    };

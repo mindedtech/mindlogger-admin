@@ -22,7 +22,6 @@ import {
 import { Item as ItemNavigation } from 'shared/components/NavigationMenu/NavigationMenu.types';
 
 import { GetSettings } from './BuilderAppletSettings.types';
-// import { LorisIntegration } from './IntegrationsListSetting/Integrations';
 import { IntegrationsListSetting } from './IntegrationsListSetting';
 
 const ReportConfigSetting = lazy(() => import('modules/Builder/features/ReportConfigSetting'));
@@ -77,7 +76,6 @@ export const getSettings = ({
           ),
           param: SettingParam.Integrations,
           isVisible: showIntegrations,
-          'data-testid': `${dataTestid}-loris-integration`,
         },
       ],
     },
