@@ -1,4 +1,4 @@
-import { Box, Button, Icon } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -124,7 +124,8 @@ const ProlifcIntegrationApplet = ({ appletData }: ProlificIntegrationAppletProps
         </StyledTitleMedium>
         {apiTokenExists && (
           <StyledLinkConfiguration onClick={handleDisconnect} data-testid="prolific-disconnect">
-            <Icon>{t('prolific.disconnect')}</Icon>
+            <Svg width={21} height={21} id="disconnection" />
+            {t('prolific.disconnect')}
           </StyledLinkConfiguration>
         )}
       </Box>

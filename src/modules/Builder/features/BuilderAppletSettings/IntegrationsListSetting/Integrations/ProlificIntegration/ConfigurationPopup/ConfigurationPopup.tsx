@@ -12,6 +12,7 @@ import { StyledLink } from '../ProlificIntegration.styles';
 import { createProlificIntegration } from '../ProlificIntegration.utils';
 import type { PopupProps as ConfigurationPopupProps } from '../ProlificIntegration.types';
 import { ConfigurationPopupState, ProlificApiToken } from './ConfigurationPopup.types';
+import { StyledApiInputWithButton, StyledApiTokenButton } from './ConfigurationPopup.style';
 
 export const ConfigurationPopup = ({
   open,
@@ -22,6 +23,14 @@ export const ConfigurationPopup = ({
   const { t } = useTranslation();
   const [state, setState] = useState<ConfigurationPopupState>({ kind: 'idle' });
   const [inputType, setInputType] = useState('password');
+
+  const toggle = (inputType: string) => {
+    if (inputType === 'password') {
+      setInputType('text');
+    } else {
+      setInputType('password');
+    }
+  };
 
   const inputNameApiToken = 'apiToken';
 
@@ -87,27 +96,36 @@ export const ConfigurationPopup = ({
         height="60rem"
       >
         <StyledModalWrapper>
-          <StyledBodyMedium sx={{ color: variables.palette.on_surface, mb: theme.spacing(1.2) }}>
+          <StyledBodyMedium
+            sx={{ color: variables.palette.on_surface, mb: theme.spacing(1.2) }}
+            data-testid="prolific-description-popup"
+          >
             {state.kind === 'submitting'
               ? t('prolific.configurationPopupConnecting')
               : t('prolific.configurationPopupDescription')}
           </StyledBodyMedium>
-          <InputController
-            name={inputNameApiToken}
-            required
-            disabled={state.kind === 'submitting'}
-            fullWidth
-            label={t('prolific.apiToken')}
-            type={inputType}
-            onBlur={() => setInputType('password')}
-            onFocus={() => setInputType('text')}
-            autoComplete="off"
-            onChange={(e) => methods.setValue(inputNameApiToken, e.target.value)}
-          />
+          <StyledApiInputWithButton>
+            <InputController
+              name={inputNameApiToken}
+              required
+              disabled={state.kind === 'submitting'}
+              fullWidth
+              label={t('prolific.apiToken')}
+              type={inputType}
+              autoComplete="off"
+              onChange={(e) => methods.setValue(inputNameApiToken, e.target.value)}
+              sx={{ '& .MuiInputBase-input': { paddingRight: '80px' } }}
+            />
+            {methods.watch(inputNameApiToken) !== '' && (
+              <StyledApiTokenButton onClick={() => toggle(inputType)}>
+                {inputType === 'password' ? t('prolific.show') : t('prolific.hide')}
+              </StyledApiTokenButton>
+            )}
+          </StyledApiInputWithButton>
           {kind === 'error' && (
             <StyledBodyMedium
               sx={{ color: variables.palette.semantic.error, mt: theme.spacing(1.8) }}
-              data-testid="upload-data-popup-error"
+              data-testid="prolific-upload-data-popup-error"
             >
               {state.message}
             </StyledBodyMedium>

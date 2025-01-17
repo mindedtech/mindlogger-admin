@@ -74,14 +74,16 @@ export const DisconnectionPopup = ({
     >
       <StyledModalWrapper>
         <StyledFlexAllCenter>
-          <StyledBodyLarger sx={{ color: variables.palette.on_surface, mb: theme.spacing(1.2) }}>
+          <StyledBodyLarger
+            sx={{ color: variables.palette.on_surface, mb: theme.spacing(1.2) }}
+            data-testid="prolific-deletion-warning"
+          >
             {t('prolific.deletionWarning')}
           </StyledBodyLarger>
         </StyledFlexAllCenter>
         {kind === 'error' && (
           <StyledBodyMedium
             sx={{ color: variables.palette.semantic.error, mt: theme.spacing(1.8) }}
-            data-testid="upload-data-popup-error"
           >
             {state.message}
           </StyledBodyMedium>
